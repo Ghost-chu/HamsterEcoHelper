@@ -43,6 +43,7 @@ public class MainCommand extends CommandReceiver {
           sellToCommand = new SellToCommand(plugin, i18n);
           searchCommand = new SearchCommand(plugin, i18n);
           storageCommands = new StorageCommands(plugin, i18n);
+          sysInsertCommands = new SysInsertCommands(plugin,i18n);
           if (HamsterEcoHelper.plugin.config.commandShortcutEnabled){
               CommandReceiver[] receivers = new CommandReceiver[]{
                       auctionCommand,
@@ -60,6 +61,7 @@ public class MainCommand extends CommandReceiver {
                       frameCommands,
                       searchCommand,
                       storageCommands,
+                      sysInsertCommands,
               };
               registerShortcuts(receivers);
           }
@@ -73,7 +75,8 @@ public class MainCommand extends CommandReceiver {
             }
         }
     }
-
+    @SubCommand(value = "sysinsert")
+    SysInsertCommands sysInsertCommands;
     @SubCommand(value = "auc")
     AuctionCommand auctionCommand;
     @SubCommand(value = "bal")

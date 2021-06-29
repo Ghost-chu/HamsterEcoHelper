@@ -98,11 +98,19 @@ commands:
     permission: heh.command
     permission-message: "You do not have the required permission: <permission>"
     usage: "/<command> [SubCommand] [Arguments...] or /<command> help"
-
+  hinsert:
+    description: Admin command
+    aliases: []
+    permission: heh.admin
+    permission-message: "You do not have the required permission: <permission>"
+    usage: "/<command> [SubCommand] [Arguments...] or /<command> help"
 permissions:
   heh.command:
     default: true
     description: base permission for heh plugin
+  heh.admin:
+    default: op
+    description: Nope
   heh.business.market:
     default: op
     description: market permission

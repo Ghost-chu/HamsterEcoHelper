@@ -63,4 +63,23 @@ public class Configuration extends PluginConfigure {
 
     @Serializable(name = "search.cooldown_tick")
     public int searchCooldownTick = 200;
+
+    @Serializable(name = "timer.auction.interval")
+    public int systemAuctionInterval = 2000;
+
+    @Serializable(name = "timer.auction.minplayers")
+    public int systemAuctionMinPlayers = 6;
+
+    @Serializable(name = "timer.auction.chance")
+    public int systemAuctionChance = 10;
+
+    @Serializable(name = "timer.requisition.interval")
+    public int systemRequisitionInterval = 2000;
+
+    @Serializable(name = "timer.requisition.minplayers")
+    public int getSystemRequisitionMinPlayers = 6;
+
+    @Serializable(name = "timer.requisition.chance")
+    public int systemRequisitionChance = 10;
+
 }

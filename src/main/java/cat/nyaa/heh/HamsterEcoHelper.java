@@ -2,6 +2,9 @@ package cat.nyaa.heh;
 
 import cat.nyaa.heh.api.HamsterEcoHelperAPI;
 import cat.nyaa.heh.business.auction.Auction;
+import cat.nyaa.heh.business.auction.Requisition;
+import cat.nyaa.heh.business.item.ShopItem;
+import cat.nyaa.heh.business.item.ShopItemManager;
 import cat.nyaa.heh.business.item.ShopItemType;
 import cat.nyaa.heh.business.signshop.ItemFrameShop;
 import cat.nyaa.heh.business.signshop.SignShopManager;
@@ -23,10 +26,16 @@ import cat.nyaa.nyaacore.component.ISystemBalance;
 import cat.nyaa.nyaacore.component.NyaaComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 
 public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI {
@@ -42,6 +51,9 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
     DatabaseManager databaseManager;
     UiManager uiManager;
 
+    public File itemFile = new File(getDataFolder(),"sysitem.yml");
+    public YamlConfiguration itemConfiguration;
+
     @Override
     public void onEnable() {
         plugin = this;
@@ -51,6 +63,36 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
         signEvents = new SignEvents();
         Bukkit.getPluginManager().registerEvents(uiEvents, this);
         Bukkit.getPluginManager().registerEvents(signEvents, this);
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                Random random = new Random();
+                if(random.nextInt(config.systemAuctionChance) != 0){
+                    return;
+                }
+                List<ConfigItem> auctionItems = (List<ConfigItem>) itemConfiguration.getList("auction");
+                int sel = random.nextInt(auctionItems.size());
+                ConfigItem selected = auctionItems.get(sel);
+                ShopItem item = ShopItemManager.newShopItem(SystemAccountUtils.getSystemUuid(), ShopItemType.AUCTION, selected.getItemStack(), selected.getPrice());
+                ShopItemManager.insertShopItem(item);
+                Auction.startAuction(item, selected.getPrice(), 1.0D, selected.getPrice());
+            }
+        }.runTaskTimer(this,0,config.systemAuctionInterval);
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                Random random = new Random();
+                if(random.nextInt(config.systemRequisitionChance) != 0){
+                    return;
+                }
+                List<ConfigItem> requisitionItems = (List<ConfigItem>) itemConfiguration.getList("requisition");
+                int sel = random.nextInt(requisitionItems.size());
+                ConfigItem selected = requisitionItems.get(sel);
+                ShopItem item = ShopItemManager.newShopItem(SystemAccountUtils.getSystemUuid(), ShopItemType.REQUISITION, selected.getItemStack(), selected.getPrice());
+                ShopItemManager.insertShopItem(item);
+                Requisition.startRequisition(item);
+            }
+        }.runTaskTimer(this,0,config.systemRequisitionInterval);
     }
 
     private void registerCommands() {
@@ -71,6 +113,15 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
     public void onReload() {
         config = new Configuration();
         config.load();
+        if(!itemFile.exists()){
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                itemFile.createNewFile();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
+        itemConfiguration = YamlConfiguration.loadConfiguration(itemFile);
         i18n = new I18n(plugin, config.language);
         i18n.load();
         databaseManager = DatabaseManager.getInstance();
@@ -79,7 +130,11 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
         SignShopConnection.getInstance();
         TransactionController.getInstance();
         SystemAccountUtils.init();
-        NyaaComponent.register(ISystemBalance.class, new SystemAccountUtils());
+        try {
+            NyaaComponent.register(ISystemBalance.class, new SystemAccountUtils());
+        }catch (Exception i){
+            i.printStackTrace();
+        }
         EcoUtils.getInstance();
         ButtonRegister.getInstance().load();
         SignShopManager ssm = SignShopManager.getInstance();
@@ -181,6 +236,9 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
     public HamsterEcoHelperAPI getImpl(){
         return this;
     }
+
+
+
 }
 
 
