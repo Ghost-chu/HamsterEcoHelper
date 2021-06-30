@@ -61,9 +61,6 @@ public class SystemAccountUtils implements ISystemBalance {
     }
 
     public static String getSystemName(){
-        if (account.isPlayer){
-            return getFakePlayer().getName();
-        }
         return I18n.format("system.name");
     }
 
