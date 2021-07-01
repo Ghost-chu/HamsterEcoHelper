@@ -27,6 +27,7 @@ import cat.nyaa.nyaacore.component.NyaaComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -63,6 +64,7 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
         signEvents = new SignEvents();
         Bukkit.getPluginManager().registerEvents(uiEvents, this);
         Bukkit.getPluginManager().registerEvents(signEvents, this);
+        ConfigurationSerialization.registerClass(ConfigItem.class);
         new BukkitRunnable(){
             @Override
             public void run() {
