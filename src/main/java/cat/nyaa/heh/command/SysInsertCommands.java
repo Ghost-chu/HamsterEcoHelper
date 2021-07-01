@@ -6,6 +6,7 @@ import cat.nyaa.nyaacore.ILocalizer;
 import cat.nyaa.nyaacore.cmdreceiver.Arguments;
 import cat.nyaa.nyaacore.cmdreceiver.CommandReceiver;
 import cat.nyaa.nyaacore.cmdreceiver.SubCommand;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -39,7 +40,10 @@ public class SysInsertCommands extends CommandReceiver implements ShortcutComman
         List<ConfigItem> requisitionItems = (List<ConfigItem>) plugin.itemConfiguration.getList("requisition", new ArrayList<>());
         String cmd = arguments.nextString("auc");
         double price = arguments.nextDouble();
-        ConfigItem configItem = new ConfigItem(((Player)sender).getInventory().getItemInMainHand(),price);
+        ConfigItem configItem = new ConfigItem(((Player)sender).getItemInHand(), price);
+        if(configItem.getItemStack().getType() == Material.AIR){
+            sender.sendMessage("You must have an valid item in your hand.");
+        }
         switch (cmd){
             case "auc":
                 auctionItems.add(configItem);
