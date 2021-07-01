@@ -73,6 +73,9 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
                     return;
                 }
                 List<ConfigItem> auctionItems = (List<ConfigItem>) itemConfiguration.getList("auction");
+                if(auctionItems == null || auctionItems.isEmpty()){
+                    return;
+                }
                 int sel = random.nextInt(auctionItems.size());
                 ConfigItem selected = auctionItems.get(sel);
                 ShopItem item = ShopItemManager.newShopItem(SystemAccountUtils.getSystemUuid(), ShopItemType.AUCTION, selected.getItemStack(), selected.getPrice());
@@ -88,6 +91,9 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
                     return;
                 }
                 List<ConfigItem> requisitionItems = (List<ConfigItem>) itemConfiguration.getList("requisition");
+                if(requisitionItems == null || requisitionItems.isEmpty()){
+                    return;
+                }
                 int sel = random.nextInt(requisitionItems.size());
                 ConfigItem selected = requisitionItems.get(sel);
                 ShopItem item = ShopItemManager.newShopItem(SystemAccountUtils.getSystemUuid(), ShopItemType.REQUISITION, selected.getItemStack(), selected.getPrice());
