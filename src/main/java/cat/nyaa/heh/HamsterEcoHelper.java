@@ -17,6 +17,7 @@ import cat.nyaa.heh.db.MarketConnection;
 import cat.nyaa.heh.db.SignShopConnection;
 import cat.nyaa.heh.events.listeners.SignEvents;
 import cat.nyaa.heh.events.listeners.UiEvents;
+import cat.nyaa.heh.ui.BaseUi;
 import cat.nyaa.heh.ui.SignShopGUI;
 import cat.nyaa.heh.ui.UiManager;
 import cat.nyaa.heh.ui.component.button.ButtonRegister;
@@ -35,6 +36,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -64,7 +66,6 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
         signEvents = new SignEvents();
         Bukkit.getPluginManager().registerEvents(uiEvents, this);
         Bukkit.getPluginManager().registerEvents(signEvents, this);
-        ConfigurationSerialization.registerClass(ConfigItem.class);
         new BukkitRunnable(){
             @Override
             public void run() {
@@ -72,8 +73,9 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
                 if(random.nextInt(config.systemAuctionChance) != 0){
                     return;
                 }
-                List<ConfigItem> auctionItems = (List<ConfigItem>) itemConfiguration.getList("auction");
-                if(auctionItems == null || auctionItems.isEmpty()){
+                List<ConfigItem> auctionItems = new ArrayList<>();
+                itemConfiguration.getStringList("auction").forEach(entry-> auctionItems.add(ConfigItem.deserialize(entry)));
+                if(auctionItems.isEmpty()){
                     return;
                 }
                 int sel = random.nextInt(auctionItems.size());
@@ -90,8 +92,9 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
                 if(random.nextInt(config.systemRequisitionChance) != 0){
                     return;
                 }
-                List<ConfigItem> requisitionItems = (List<ConfigItem>) itemConfiguration.getList("requisition");
-                if(requisitionItems == null || requisitionItems.isEmpty()){
+                List<ConfigItem> requisitionItems = new ArrayList<>();
+                itemConfiguration.getStringList("requisition").forEach(entry-> requisitionItems.add(ConfigItem.deserialize(entry)));
+                if(requisitionItems.isEmpty()){
                     return;
                 }
                 int sel = random.nextInt(requisitionItems.size());
@@ -114,7 +117,7 @@ public class HamsterEcoHelper extends JavaPlugin implements HamsterEcoHelperAPI 
             auction.abort();
         }
         databaseManager.close();
-        uiManager.getMarketUis().forEach(marketGUI -> marketGUI.close());
+        uiManager.getMarketUis().forEach(BaseUi::close);
         plugin = null;
     }
 

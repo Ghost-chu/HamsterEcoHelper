@@ -39,8 +39,8 @@ public class SysInsertCommands extends CommandReceiver implements ShortcutComman
 
     @SubCommand(isDefaultCommand = true, permission = PERMISSION_ADMIN)
     public void onInsert(CommandSender sender, Arguments arguments) {
-        List<ConfigItem> auctionItems = (List<ConfigItem>) plugin.itemConfiguration.getList("auction", new ArrayList<>());
-        List<ConfigItem> requisitionItems = (List<ConfigItem>) plugin.itemConfiguration.getList("requisition", new ArrayList<>());
+        List<String> auctionItems =  plugin.itemConfiguration.getStringList("auction");
+        List<String> requisitionItems = plugin.itemConfiguration.getStringList("requisition");
         String cmd = arguments.nextString("auc");
         double price = arguments.nextDouble();
         ConfigItem configItem = new ConfigItem(((Player) sender).getItemInHand(), price);
@@ -49,21 +49,15 @@ public class SysInsertCommands extends CommandReceiver implements ShortcutComman
             return;
         }
 
-        String string = ConfigItem.serializeItem(((Player) sender).getItemInHand());
-        ItemStack restoredItem = ConfigItem.deserializeItem(string);
-        if (!((Player) sender).getInventory().getItemInHand().equals(restoredItem)) {
-            sender.sendMessage(ChatColor.RED + "该物品序列化后与原始物品不符，可能存在潜在风险！");
-        }
-
 
         switch (cmd) {
             case "auc":
-                auctionItems.add(configItem);
+                auctionItems.add(configItem.serialize());
                 plugin.itemConfiguration.set("auction", auctionItems);
                 sender.sendMessage(ChatColor.GREEN + "Auction item saved");
                 break;
             case "req":
-                requisitionItems.add(configItem);
+                requisitionItems.add(configItem.serialize());
                 plugin.itemConfiguration.set("requisition", requisitionItems);
                 sender.sendMessage(ChatColor.GREEN + "Requisition item saved");
                 break;

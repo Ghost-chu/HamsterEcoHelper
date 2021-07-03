@@ -1,5 +1,6 @@
 package cat.nyaa.heh;
 
+import com.google.gson.Gson;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -7,14 +8,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConfigItem implements org.bukkit.configuration.serialization.ConfigurationSerializable {
+public class ConfigItem {
+    private final static Gson gson = new Gson();
     public ConfigItem(ItemStack itemStack, double price) {
         this.itemStack = itemStack;
         this.price = price;
-    }
-    public ConfigItem(Map< String, Object> arg ){
-        this.itemStack =deserializeItem((String)arg.get("item"));
-        this.price = (double)arg.get("price");
     }
 
     private ItemStack itemStack;
@@ -36,19 +34,13 @@ public class ConfigItem implements org.bukkit.configuration.serialization.Config
         this.price = price;
     }
 
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("item", serializeItem(this.itemStack));
-        map.put("price", price);
-        return map;
+
+    public String serialize(){
+        return gson.toJson(this);
     }
 
-    public static ConfigItem deserialize(Map< String, Object> arg){
-        return new ConfigItem(deserializeItem((String)arg.get("item")),(double)arg.get("price"));
-    }
-    public static ConfigItem valueOf(Map< String, Object> arg){
-        return new ConfigItem(deserializeItem((String)arg.get("item")),(double)arg.get("price"));
+    public static ConfigItem deserialize(String json){
+        return gson.fromJson(json,ConfigItem.class);
     }
 
     public static String serializeItem(ItemStack iStack) {
